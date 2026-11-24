@@ -20,6 +20,10 @@ a{color:#141414}a:hover{color:#0606F5}
 @media (prefers-reduced-motion: reduce){.pz .lift,.pz .shot{transition:none}}
 @media (max-width: 760px){
 .scroller{height:100dvh !important}
+.pz{transition:opacity 1.3s ease,transform 1.5s cubic-bezier(.16,1,.3,1) !important}
+.pz .lift{transition:transform 1.4s cubic-bezier(.16,1,.3,1),opacity 1s ease !important}
+.pz .shot{transition:opacity 1.1s .2s ease,transform 1.4s .1s cubic-bezier(.16,1,.3,1) !important}
+.pz .pname{transition:color .8s ease !important}
 .stage{height:100dvh !important}
 header{padding:16px 20px !important}
 header nav{gap:16px !important;font-size:14px !important}
@@ -298,7 +302,7 @@ class Component extends DCLogic {
         var v = 1;
         if (el) {
           var top = el.getBoundingClientRect().top - base + (i % 3) * 50;
-          v = clamp01((vh * 0.98 - top) / (vh * 0.35));
+          v = clamp01((vh * 0.98 - top) / (vh * (w < 760 ? 0.55 : 0.35)));
           var r = el.getBoundingClientRect();
           var d = Math.abs((r.top - base + r.height / 2) - vh / 2);
           if (d < bestD) { bestD = d; best = i; }
@@ -342,6 +346,8 @@ class Component extends DCLogic {
       if (onCenter) {
         var best = -1, bv = 0.35;
         for (var j = 0; j < n; j++) if (self.ratios[j] > bv) { bv = self.ratios[j]; best = j; }
+        var cur = self.state.ioCenter;
+        if (cur >= 0 && best !== cur && self.ratios[cur] > 0.5 && bv - self.ratios[cur] < 0.15) best = cur;
         var mob = (window.innerWidth || 1440) < 760;
         var c = mob ? best : -1;
         if (c !== self.state.ioCenter) upd.ioCenter = c;
